@@ -1,3 +1,5 @@
+// Javascript file containing enemy and player classes for the frogger game. 
+
 // Enemies our player must avoid
 var Enemy = function() {
     // Variables applied to each of our instances go here,
@@ -6,6 +8,9 @@ var Enemy = function() {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
+    // TODO write loc and speed variables
+    this.loc = 
+    this.speed = 
 };
 
 // Update the enemy's position, required method for game
@@ -24,11 +29,17 @@ Enemy.prototype.render = function() {
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
+var Player = function() {
+    this.sprite = 'images/char-princess-girl.png';
+    this.loc = 
+};
 
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
+var allEnemies = [];
 // Place the player object in a variable called player
+var player = Player;
 
 
 
