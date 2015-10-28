@@ -9,9 +9,11 @@ var Enemy = function() {
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
     // TODO write loc and speed variables
-    // this.x = 0
+    this.x = 0; //start off screen???
+    this.y = 101; //random row
     // this.y = random row 1,2 or 3
-    // this.speed = random speed 
+    // this.speed = random speed
+    this.speed = 100; 
 };
 
 // Update the enemy's position, required method for game
@@ -21,7 +23,8 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
     this.y = this.y;
-    this.x += this.speed * dt;
+    this.x = this.x += this.speed * dt;
+    // this.x += this.speed * dt;
 };
 
 // Draw the enemy on the screen, required method for game
@@ -34,11 +37,14 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 var Player = function() {
     this.sprite = 'images/char-boy.png';
-    // this.loc = 
+    this.x = 100;
+    this.y = 100;
 };
 //TODO complete function
 Player.prototype.update = function(dt) {
-
+    this.x = this.x * dt;
+    this.y = this.y * dt;
+    //TODO Add some functionality to stop player from moving off the screen. 
 };
 
 // TODO complete function
@@ -64,7 +70,7 @@ allEnemies.forEach(function() {
 
 });
 // Place the player object in a variable called player
-var player = Player;
+var player = new Player;
 
 
 
