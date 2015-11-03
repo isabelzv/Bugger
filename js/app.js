@@ -1,5 +1,14 @@
 // Javascript file containing enemy and player classes for the frogger game. 
+// Returns a random integer between min (included) and max (excluded)
+// Using Math.round() will give you a non-uniform distribution!
 
+var row = 80;
+var col = 101;
+
+// code taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
 // Enemies our player must avoid
 var Enemy = function() {
     // Variables applied to each of our instances go here,
@@ -9,11 +18,11 @@ var Enemy = function() {
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
     // TODO write loc and speed variables
-    this.x = 0; //start off screen???
-    this.y = 101; //random row
-    // this.y = random row 1,2 or 3
+    this.x = -100; //start off screen???
+    // this.y = 101; 
+    this.y = getRandomInt(1, 4) * row;
     // this.speed = random speed
-    this.speed = 100; 
+    this.speed = 75 + (getRandomInt(1, 10) * 10); 
 };
 
 // Update the enemy's position, required method for game
@@ -24,6 +33,9 @@ Enemy.prototype.update = function(dt) {
     // all computers.
     this.y = this.y;
     this.x = this.x += this.speed * dt;
+    if (this.x > canvas.width) {
+        this.x = -100;
+    };
     // this.x += this.speed * dt;
 };
 
@@ -37,14 +49,25 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 var Player = function() {
     this.sprite = 'images/char-boy.png';
-    this.x = 100;
-    this.y = 100;
+    this.x = col * 2;
+    this.y = row * 4;
 };
 //TODO complete function
-Player.prototype.update = function(dt) {
-    this.x = this.x * dt;
-    this.y = this.y * dt;
-    //TODO Add some functionality to stop player from moving off the screen. 
+Player.prototype.update = function() {
+    // this.x = this.x * dt;
+    // this.y = this.y * dt;
+    // if (this.x > canvas.width) {
+    //     this.x = canvas.width - canvas.col;
+    // };
+    // if (this.x < 0) {
+    //     this.x = 0;
+    // };
+    // if (this.y > canvas.height) {
+    //     this.y = canvas.height - canvas.row;
+    // };
+    // if (this.y < 0) {
+    //     this.y = 0;
+    // }; 
 };
 
 // TODO complete function
@@ -54,7 +77,7 @@ Player.prototype.render = function() {
 
 //TODO complete function
 Player.prototype.handleInput = function(key) {
-
+    
 };
 
 
@@ -62,15 +85,36 @@ Player.prototype.handleInput = function(key) {
 // Place all enemy objects in an array called allEnemies
 var allEnemies = [];
 
-//add newly created enemies into the allEnemies array
-allEnemies.push(new Enemy);
+// Iterate through allEnemies. Remove offscreen enemies. If there are more than 3 enemies in the array push a new enemie. 
+function removeEnemies() {
+    var toRemove = [];
+    var i = 0;
+    //place all offscreen enemies in toRemove
+    allEnemies.forEach(function(enemy) {  
+        if (enemy.x > canvas.width) {
+            toRemove.push(enemy[i]);
+        }
+        i++;
+    });
+    // remove enemies in the toRemove array from allEnemies
+    toRemove.forEach(function(enemy) {
+        allEnemies.slice(enemy);
+    });
+};
 
-// Define a function to operate on each enemy
-allEnemies.forEach(function() {
+removeEnemies();
 
-});
+// spawns new enemies if there is less than 3 enemies on the screen
+spawnEnemies = function() {
+    while (allEnemies.length < 3) {
+        allEnemies.push(new Enemy());
+    };
+};
+
+spawnEnemies();
+
 // Place the player object in a variable called player
-var player = new Player;
+var player = new Player();
 
 
 
