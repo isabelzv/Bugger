@@ -27,7 +27,11 @@ var Engine = (function(global) {
 
     canvas.width = 505;
     canvas.height = 606;
+
     doc.body.appendChild(canvas);
+
+    // made canvas a global in order to access in app.js 
+    global.canvas = canvas;
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -63,7 +67,11 @@ var Engine = (function(global) {
      * particularly setting the lastTime variable that is required for the
      * game loop.
      */
+
+    
+
     function init() {
+        gameStart();
         reset();
         lastTime = Date.now();
         main();
@@ -167,12 +175,13 @@ var Engine = (function(global) {
      * draw our game level. Then set init as the callback method, so that when
      * all of these images are properly loaded our game will start.
      */
+    // cropped player and enemy sprite in order to use width property for collision detection. Renamed as new...
     Resources.load([
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
-        'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/newenemy-bug.png',
+        'images/newchar-boy.png'
     ]);
     Resources.onReady(init);
 
