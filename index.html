@@ -4,8 +4,46 @@
     <meta charset="UTF-8">
     <title>Effective JavaScript: Frogger</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <script src="js/jquery-2.1.4.js"></script>
 </head>
 <body>
+	<div class="container">
+		<header class="row">
+			<div id="title" class="col-sm-12">
+				<h1 class="gameTitle">Bugger</h1>
+			</div>
+			<div id="lives" class="col-sm-3 lives"></div>
+			<div id="playButton" class="col-sm-6 button">
+				<button type="button" class="btn btn-default btn-lg">
+					<a href="#play" class="anchor-link">PLAY</a>
+				</button>
+			</div>
+			<div id="score" class="col-sm-3 score"></div>
+		</header>
+		<div class="row">
+			<div class="col-sm-3">
+				<section id="infoLeft"></section>
+			</div>
+			<div class="col-sm-6">
+				<article id="play"></article>
+			</div>
+			<div class="col-sm-3">
+				<section id="infoRight"></section>
+			</div>
+		</div>
+		<footer class="row">
+			<div class="col-sm-12">
+				<div id="score"></div>
+			</div>
+		</footer>
+		<div class="row">
+			<div class="col-sm-12">
+				<div id="gameOver"></div>
+			</div>
+		</div>
+	</div>
     <script src="js/resources.js"></script>
     <script src="js/app.js"></script>
     <script src="js/engine.js"></script>

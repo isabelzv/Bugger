@@ -14,6 +14,7 @@
  * a little simpler to work with.
  */
 
+
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
@@ -24,18 +25,23 @@ var Engine = (function(global) {
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         lastTime;
+        play = false;
 
     canvas.width = 505;
     canvas.height = 606;
 
-    doc.body.appendChild(canvas);
+    // doc.body.appendChild(canvas);
+    $("#play").append(canvas);
 
     // made canvas a global in order to access in app.js 
     global.canvas = canvas;
 
+
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
      */
+
+    
     function main() {
         /* Get our time delta information which is required if your game
          * requires smooth animation. Because everyone's computer processes
@@ -49,7 +55,22 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
-        update(dt);
+        document.getElementById('playButton').onclick = function() {
+            if (play === false) {
+                scoreValue = 0;
+                lifeValue = 3;
+                player.reset();
+                allEnemies.forEach(function(enemy) {
+                    enemy.reset();
+                });
+                play = true;
+            } else {
+                play = false;
+            }
+        };
+        if (play === true) {
+            update(dt);
+        };
         render();
 
         /* Set our lastTime variable which is used to determine the time delta
@@ -87,7 +108,12 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
+        if (play != true) {
+            return;
+        }
+
         updateEntities(dt);
+
         // checkCollisions();
     }
 
@@ -99,11 +125,20 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
-        allEnemies.forEach(function(enemy) {
-            enemy.update(dt);
+        allGems.forEach(function(gem) {
+            gem.update();
         });
-        player.update();
-    }
+
+        if (player.dying !== true) {
+            allEnemies.forEach(function(enemy) {
+                enemy.update(dt);
+            });
+
+            player.update();
+        }
+
+        blood.update();
+    };
 
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
@@ -158,9 +193,19 @@ var Engine = (function(global) {
          */
         allEnemies.forEach(function(enemy) {
             enemy.render();
+            // if (enemy.collided === true) {
+            //     blood = new BloodSplatter();
+            //     blood.update();
+            //     blood.render();
+            // };
+        });
+        
+        allGems.forEach(function(gem) {
+            gem.render();
         });
 
         player.render();
+        blood.render();        
     }
 
     /* This function does nothing but it could have been a good place to
@@ -168,8 +213,17 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
-    }
+        // GAME OVER screen
+        // $("#play").style.display = none;
+        // player.reset();
+        // scoreValue = 0;
+        // lifeValue = 0;
+        // for (i = 0; i < allGems.length; i++) {
+        //     if (allGems[i].collected === true) {
+        //         allGems.slice(i);
+        //     };
+        // };
+    };
 
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
@@ -181,7 +235,11 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/newenemy-bug.png',
-        'images/newchar-boy.png'
+        'images/newchar-boy.png',
+        'images/smallGem Blue.png', 
+        'images/smallGem Green.png', 
+        'images/smallGem Orange.png',
+        'images/blood copy.png'
     ]);
     Resources.onReady(init);
 
@@ -191,3 +249,5 @@ var Engine = (function(global) {
      */
     global.ctx = ctx;
 })(this);
+
+// $("#play").append(canvas);
