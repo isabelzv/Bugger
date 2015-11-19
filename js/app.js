@@ -72,8 +72,8 @@ Enemy.prototype.update = function(dt) {
             // reset();
             // $("#play").style.display = "none";
             play = false;
-            // $("#play").hide();
-            $("#gameOver").text("game over");
+            
+            gameover = true;
         }
         else {
             // reset the player to the start point.
@@ -158,21 +158,24 @@ Player.prototype.render = function() {
 };
 
 Player.prototype.handleInput = function(key) {
+    if (play !== true) {
+        return;
+    };
     if (key === 'left' && this.x > 0) {
-        this.x -= row;
-    } else if (key === 'right' && this.x < canvas.width - 100) {
-        this.x += row;
-    } else if (key === 'up' && this.y > 0) {
-        this.y -= row;
-    } else if (key === 'down' && this.y < canvas.height - 100) {
-        this.y += row;
+       this.x -= row;
+       } else if (key === 'right' && this.x < canvas.width - 100) {
+       this.x += row;
+       } else if (key === 'up' && this.y > 0) {
+       this.y -= row;
+       } else if (key === 'down' && this.y < canvas.height - 100) {
+       this.y += row;
     };
 };
 
 Player.prototype.reset = function() {
     this.x = col * 2;
     this.y = row * 4 + topPadding;
-    this.dying = false
+    this.dying = false;
 };
 
 //TODO Gems Class including render and update with collision detection.
@@ -222,8 +225,8 @@ Gem.prototype.update = function() {
 Gem.prototype.render = function() {
     if (this.collected === true) {
         return;
-    }
-   ctx.drawImage(Resources.get(this.sprite), this.x, this.y); 
+    };
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y); 
 };
 
 
@@ -241,6 +244,7 @@ function gameStart() {
   // Place the player object in a variable called player
   player = new Player();
   blood = new BloodSplatter();
+  gameOverSplash = new GameOverSplash();
 };
 
 
@@ -291,55 +295,8 @@ document.addEventListener('keyup', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
-
-
-// // sprite animation code taken from http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
-// var bloodImage = new Image();
-// bloodImage.src = "images/blood copy.png";
-// // Thankyou to http://powstudios.com/
-
-// function sprite (options) {
-                
-//     var that = {};
-                    
-//     that.context = options.context;
-//     that.width = options.width;
-//     that.height = options.height;
-//     that.image = options.image;
-
-//     return that;
-// };
-
-// blood = sprite({
-//     context: canvas.getContext("2d"),
-//     // context: ctx,
-//     width: 512,
-//     height: 512,
-//     image: bloodImage
-// });
-// console.log(blood);
-
-// function sprite (options) {
-
-                
-//     that.render = function () {
-
-//         // Draw the animation
-//         that.context.drawImage(
-//            that.image,
-//            0,
-//            0,
-//            that.width,
-//            that.height,
-//            player.x,
-//            player.y,
-//            that.width,
-//            that.height);
-//         ctx.drawImage(Resources.get(this.sprite), this.x, this.y); 
-//     };
-
-// };
-
+// BloodSplatter class constructed witht the help of http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
+// Thankyou to http://powstudios.com/ for the sprites
 var BloodSplatter = function() {
     this.sprite = "images/blood copy.png";
     this.x = player.x;
@@ -376,9 +333,6 @@ BloodSplatter.prototype.update = function() {
 }; 
 
 BloodSplatter.prototype.render = function() {
-    // Clear the canvas
-    // ctx.clearRect(this.x, this.y, this.width / numberOfFrames, this.height);
-    // draw the blood
     if (!player.dying) {
         return;
     }
@@ -395,7 +349,20 @@ BloodSplatter.prototype.render = function() {
         100);  
 };
 
-blood = new BloodSplatter();
 
+var GameOverSplash = function() {
+    this.sprite = "images/gameover.png";
+    this.x = canvas.width / 2 - 75;
+    this.y = canvas.height / 2 - 75; 
+};
 
+GameOverSplash.prototype.render = function() {
+    if (gameover) {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y); 
+    };
+};
+
+// gameOverSplash = new GameOverSplash();
+
+// blood = new BloodSplatter();
 

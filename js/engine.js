@@ -26,6 +26,7 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
         play = false;
+        gameover = false;
 
     canvas.width = 505;
     canvas.height = 606;
@@ -64,6 +65,7 @@ var Engine = (function(global) {
                     enemy.reset();
                 });
                 play = true;
+                gameover = false;
             } else {
                 play = false;
             }
@@ -193,11 +195,6 @@ var Engine = (function(global) {
          */
         allEnemies.forEach(function(enemy) {
             enemy.render();
-            // if (enemy.collided === true) {
-            //     blood = new BloodSplatter();
-            //     blood.update();
-            //     blood.render();
-            // };
         });
         
         allGems.forEach(function(gem) {
@@ -205,7 +202,8 @@ var Engine = (function(global) {
         });
 
         player.render();
-        blood.render();        
+        blood.render(); 
+        gameOverSplash.render();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -239,7 +237,8 @@ var Engine = (function(global) {
         'images/smallGem Blue.png', 
         'images/smallGem Green.png', 
         'images/smallGem Orange.png',
-        'images/blood copy.png'
+        'images/blood copy.png',
+        'images/gameover.png'
     ]);
     Resources.onReady(init);
 
