@@ -3,17 +3,6 @@
  * draws the initial game board on the screen, and then calls the update and
  * render methods on your player and enemy objects (defined in your app.js).
  *
- * A game engine works by drawing the entire game screen over and over, kind of
- * like a flipbook you may have created as a kid. When your player moves across
- * the screen, it may look like just that image/character is moving or being
- * drawn but that is not the case. What's really happening is the entire "scene"
- * is being drawn over and over, presenting the illusion of animation.
- *
- * This engine is available globally via the Engine variable and it also makes
- * the canvas' context (ctx) object globally available to make writing app.js
- * a little simpler to work with.
- */
-
 
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
@@ -56,20 +45,28 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
+        // play button that will toggle updating of entities and after a game over
+        // reset the score, lives, player and enemy positions
         document.getElementById('playButton').onclick = function() {
             if (play === false) {
                 scoreValue = 0;
+                $("#score").text("Score = " + scoreValue);
                 lifeValue = 3;
+                $("#lives").text("Lives = " + lifeValue);
                 player.reset();
                 allEnemies.forEach(function(enemy) {
                     enemy.reset();
                 });
+                // toggles play to true, so that updating will happen
                 play = true;
+                // toggles gameover back to false (after a gameover has occured)
                 gameover = false;
+            // if play was true then it is toggled to false, so that updating stops
             } else {
                 play = false;
             }
         };
+        
         if (play === true) {
             update(dt);
         };
@@ -140,6 +137,7 @@ var Engine = (function(global) {
         }
 
         blood.update();
+        successSplash.update();
     };
 
     /* This function initially draws the "game level", it will then call
@@ -204,6 +202,7 @@ var Engine = (function(global) {
         player.render();
         blood.render(); 
         gameOverSplash.render();
+        successSplash.render();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -238,7 +237,8 @@ var Engine = (function(global) {
         'images/smallGem Green.png', 
         'images/smallGem Orange.png',
         'images/blood copy.png',
-        'images/gameover.png'
+        'images/gameover.png',
+        'images/success.png'
     ]);
     Resources.onReady(init);
 

@@ -1,6 +1,5 @@
-// Javascript file containing enemy and player classes for the frogger game. 
-// Returns a random integer between min (included) and max (excluded)
-// Using Math.round() will give you a non-uniform distribution!
+// Javascript file containing enemy, player, gem, BloodSplatter and Splash classes as well as gameStart function for the frogger game. 
+
 
 var row = 83;
 var col = 101;
@@ -12,7 +11,7 @@ lifeValue = 3;
 $("#lives").append("Lives = " + lifeValue);
 
 // code taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
-// min inclusive. max exclusive.
+// Returns a random integer between min (included) and max (excluded)
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
@@ -31,7 +30,6 @@ var Enemy = function() {
     // gives bugs a random speed
     this.speed = 75 + (getRandomInt(1, 10) * 10); 
     this.width = Resources.get(this.sprite).width;
-    console.log("enemy width = " + this.width);
     this.height = Resources.get(this.sprite).height;
     this.collided = false;
 };
@@ -53,10 +51,8 @@ Enemy.prototype.update = function(dt) {
     
     // Create player rectangle TODO can I do this somewhere else, so it doesn't have to be done for each enemy???
     var playerRectangle = {x: player.x, y: player.y, width: player.width, height: player.height};
-    console.log(playerRectangle);
     // Create enemy rectangle 
     var enemyRectangle = {x: this.x, y: this.y, width: this.width, height: this.height};
-    console.log(enemyRectangle);
 
     // compare player and enemy rectangles to detect if there has been a collision
     // code taken from https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
@@ -79,7 +75,7 @@ Enemy.prototype.update = function(dt) {
             // reset the player to the start point.
             //player.reset();
             // update lifes on the screen.
-            $("#lives").text("Life = " + lifeValue);
+            $("#lives").text("Lives = " + lifeValue);
         };
     };
 };
@@ -134,22 +130,23 @@ Enemy.prototype.render = function() {
 var Player = function() {
     this.sprite = 'images/newchar-boy.png';
     //TODO either hard code x and y pos or find a nicer working way to do it.
-    this.x = col * 2;
-    this.y = row * 4 + topPadding;
     this.width = Resources.get(this.sprite).width;
-    console.log(this.width);
+    console.log("plarer width = " + this.width);
     this.height = Resources.get(this.sprite).height;
+    this.x = col * 2.5 - (this.width / 2);
+    console.log("player.x = " + this.x)
+    this.y = row * 4 + topPadding;
     this.dying = false;
+    this.crossed = false;
 };
 
 Player.prototype.update = function(dt) {
     this.x * dt;
+    console.log("player.x = " + this.x)
     this.y * dt;
     if (this.y <= topPadding) {
-        scoreValue++;
-        // update lifes on the screen.
-        $("#score").text("Score = " + scoreValue);
-        player.reset();
+        this.crossed = true;
+        //player.reset();
     };
 };
 
@@ -162,20 +159,22 @@ Player.prototype.handleInput = function(key) {
         return;
     };
     if (key === 'left' && this.x > 0) {
-       this.x -= row;
-       } else if (key === 'right' && this.x < canvas.width - 100) {
-       this.x += row;
+       this.x -= col;
+       } else if (key === 'right' && this.x < canvas.width - col) {
+       this.x += col;
        } else if (key === 'up' && this.y > 0) {
        this.y -= row;
-       } else if (key === 'down' && this.y < canvas.height - 100) {
+       } else if (key === 'down' && this.y < canvas.height - 100 - topPadding) {
        this.y += row;
     };
+    console.log("player.x = " + this.x)
 };
 
 Player.prototype.reset = function() {
     this.x = col * 2;
     this.y = row * 4 + topPadding;
     this.dying = false;
+    this.crossed = false;
 };
 
 //TODO Gems Class including render and update with collision detection.
@@ -199,11 +198,9 @@ Gem.prototype.update = function() {
 
     // create a rectangle for the player for collision detection purposes.
     var playerRectangle = {x: player.x, y: player.y, width: player.width, height: player.height};
-    console.log(playerRectangle);
 
     // create a rectangle around the gem for collision detection purposes.
     var gemRectangle = {x: this.x, y: this.y, width: this.width, height: this.height};
-    console.log(gemRectangle);
 
     // check to see if the rectangles overlap.
     if (playerRectangle.x < gemRectangle.x + gemRectangle.width &&
@@ -214,7 +211,6 @@ Gem.prototype.update = function() {
         lifeValue++;
         // flag gem as "collected", so that it won't be rendered or updated anymore.
         this.collected = true;
-        console.log("lifeValue = " + lifeValue);
         // update number of lives on the screen.
         $("#lives").text("Lives = " + lifeValue);
         // add a new gem to the screen
@@ -245,6 +241,7 @@ function gameStart() {
   player = new Player();
   blood = new BloodSplatter();
   gameOverSplash = new GameOverSplash();
+  successSplash = new SuccessSplash();
 };
 
 
@@ -362,6 +359,38 @@ GameOverSplash.prototype.render = function() {
     };
 };
 
+var SuccessSplash = function() {
+    this.sprite = "images/success.png";
+    this.x = canvas.width / 2 - 150;
+    this.y = canvas.height / 2 - 100; 
+    this.tickCount = 0;
+};
+
+SuccessSplash.prototype.update = function() {
+    if (!player.crossed) {
+        return;
+    }
+
+    // update score on the first update only.
+    if (this.tickCount === 0) {
+        scoreValue++;
+        // update score on the screen.
+        $("#score").text("Score = " + scoreValue);
+    }
+
+    this.tickCount += 1;          
+    if (this.tickCount > 40) {   
+        player.reset()
+        this.frameIndex = 0;
+        this.tickCount = 0;
+    };
+}; 
+
+SuccessSplash.prototype.render = function() {
+    if (player.crossed === true) {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y); 
+    };
+};
 // gameOverSplash = new GameOverSplash();
 
 // blood = new BloodSplatter();
