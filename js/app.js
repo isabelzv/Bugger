@@ -1,25 +1,25 @@
 // Javascript file containing enemy, player, gem, BloodSplatter and Splash classes as well as gameStart function for the frogger game. 
 
-
+// define variable for placement and meovement of entities.
 var row = 83;
 var col = 101;
 var topPadding = 50;
 
+// define score and lives and add to DOM
 scoreValue = 0;
 $("#score").append("Score = " + scoreValue);
 lifeValue = 3;
 $("#lives").append("Lives = " + lifeValue);
 
 // code taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
-// Returns a random integer between min (included) and max (excluded)
+// Returns a random integer between min (included) and max (excluded).
+// For use in enemy y position and speed and gem position.
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
-}
+};
+
 // Enemies our player must avoid
 var Enemy = function() {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/newenemy-bug.png';
@@ -29,6 +29,8 @@ var Enemy = function() {
     this.y = getRandomInt(1, 4) * row + topPadding;
     // gives bugs a random speed
     this.speed = 75 + (getRandomInt(1, 10) * 10); 
+    // gets the width and height of the sprite for the purpose of 
+    // collision detection.
     this.width = Resources.get(this.sprite).width;
     this.height = Resources.get(this.sprite).height;
     this.collided = false;
@@ -42,16 +44,19 @@ Enemy.prototype.update = function(dt) {
     // all computers.
     this.y = this.y;
     this.x = this.x += this.speed * dt;
-    // if the enemies are off the screen x is reset to -100, a new random y value is given and a new random speed.
+
+    // if the enemies are off the screen, x is reset to -100, a new random y value is given and a new random speed.
     if (this.x > canvas.width) {
         this.x = -100;
         this.y = getRandomInt(1, 4) * row + topPadding;
         this.speed = 75 + (getRandomInt(1, 10) * 10);
     };
     
-    // Create player rectangle TODO can I do this somewhere else, so it doesn't have to be done for each enemy???
+    // TODO can I do this somewhere else, so it doesn't have to be done for each enemy???
+    // in checkCollision???
+    // Create player rectangle.
     var playerRectangle = {x: player.x, y: player.y, width: player.width, height: player.height};
-    // Create enemy rectangle 
+    // Create enemy rectangle. 
     var enemyRectangle = {x: this.x, y: this.y, width: this.width, height: this.height};
 
     // compare player and enemy rectangles to detect if there has been a collision
@@ -62,18 +67,16 @@ Enemy.prototype.update = function(dt) {
        playerRectangle.height + playerRectangle.y > enemyRectangle.y) {
         // if there has been a collision, reduce lifeValue by 1. 
         lifeValue--;
+        // set dying to true, so that entities stop updating and blood is updated.
         player.dying = true;
-        // if lifeValue is less than 0, Game Over 
+        // if lifeValue is less than 0, Game Over. 
         if (lifeValue < 0) {
-            // reset();
-            // $("#play").style.display = "none";
+            // play set to false to stop updating.
             play = false;
-            
+            // gameover set to true, so that gameOverSplash is updated.
             gameover = true;
         }
         else {
-            // reset the player to the start point.
-            //player.reset();
             // update lifes on the screen.
             $("#lives").text("Lives = " + lifeValue);
         };
@@ -91,70 +94,36 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// Create rectangle for collision detection
-// var collisionDetection = function() {
-//     for(var i=0; i < allEnemies.length; i++) {
-//         if (allEnemies[i].x < (player.y + player.width) ||
-//             (allEnemies[i].x + allEnemies[i].width) > player.x ||
-//             allEnemies[i].y < (player.y + player.height) || 
-//             (allEnemies[i].y + allEnemies[i].height) > player.y) {
-//             player.reset();
-//         };
-//     };    
-// };
-
-// collisionDetection();
-
-// Rectangle constructor function
-// var Rectangle = function (left, top, width, height) {
-//     this.left = left;
-//     this.top = top;
-//     this.right = this.left + width;
-//     this.bottom = this.top + height;
-//     this.width = width;
-//     this.height = height;
-// };
-
-// var playerRectangle = new Rectangle(player.x, player.y, player.width, player.height);
-
-// var enemyRectangle = new Rectangle()
-
-// Check to see if the rectangles overlap
-// function checkCollision(r1, r2) {
-//     return !(r1.left > r2.right || r1.right < r2.left || r1.top > r2.bottom || r1.bottom < r2.top);
-// };
-
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+// Player class. Initializes position and size. Sets dying and crossed to false.
 var Player = function() {
     this.sprite = 'images/newchar-boy.png';
-    //TODO either hard code x and y pos or find a nicer working way to do it.
     this.width = Resources.get(this.sprite).width;
-    console.log("plarer width = " + this.width);
     this.height = Resources.get(this.sprite).height;
     this.x = col * 2.5 - (this.width / 2);
-    console.log("player.x = " + this.x)
     this.y = row * 4 + topPadding;
     this.dying = false;
     this.crossed = false;
 };
 
+// update function to keep player moving and to keep track of whether 
+// player has crossed or not.
 Player.prototype.update = function(dt) {
     this.x * dt;
-    console.log("player.x = " + this.x)
     this.y * dt;
     if (this.y <= topPadding) {
+        // set crossed to true, so that successSplash gets updated.
         this.crossed = true;
-        //player.reset();
     };
 };
 
+// draw the player using the given sprite and x and y pos.
 Player.prototype.render = function() {
    ctx.drawImage(Resources.get(this.sprite), this.x, this.y); 
 };
 
+// use the key inputs to move the player's x and y pos.
 Player.prototype.handleInput = function(key) {
+    // if not in play mode, don't do anything with the input.
     if (play !== true) {
         return;
     };
@@ -167,9 +136,9 @@ Player.prototype.handleInput = function(key) {
        } else if (key === 'down' && this.y < canvas.height - 100 - topPadding) {
        this.y += row;
     };
-    console.log("player.x = " + this.x)
 };
 
+// reset the player, called when playButton is clicked after gameover
 Player.prototype.reset = function() {
     this.x = col * 2;
     this.y = row * 4 + topPadding;
@@ -177,19 +146,20 @@ Player.prototype.reset = function() {
     this.crossed = false;
 };
 
-//TODO Gems Class including render and update with collision detection.
+// Gem Class initializes x and y position, width and height and collected boolean.
 var Gem = function() {
     var gemSprites = ['images/smallGem Blue.png', 'images/smallGem Green.png', 'images/smallGem Orange.png']
+    // initializes sprite to 1 of three options.
     this.sprite = gemSprites[getRandomInt(0,3)];
     this.x = getRandomInt(0, 5) * col;
     this.y = getRandomInt(1, 4) * row + topPadding;
-    // this.width = Resources.get(this.sprite).width;
-    // this.height = Resources.get(this.sprite).height;
-    this.width = 49;
-    this.height = 54;
+    this.width = Resources.get(this.sprite).width;
+    this.height = Resources.get(this.sprite).height;
+    // collected initialized to false, so it can be updated and rendered
     this.collected = false;
 };
 
+// Update function for Gem class. Checks for collision with player.  
 Gem.prototype.update = function() {
     // if gem has already been collected, return from the function and move onto the next gem.
     if (this.collected === true) {
@@ -218,65 +188,166 @@ Gem.prototype.update = function() {
     };
 };
 
+// Draws each gem.
 Gem.prototype.render = function() {
+    // if gem has already been collected return from the function.
     if (this.collected === true) {
         return;
     };
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y); 
 };
 
+// BloodSplatter class constructed witht the help of http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
+// Thankyou to http://powstudios.com/ for the sprites
+var BloodSplatter = function() {
+    this.sprite = "images/blood copy.png";
+    // Initialiaze blood pos to be where ever player is at the time blood is updated. 
+    this.x = player.x;
+    this.y = player.y;
+    // width is the width of the whole sprite strip.
+    this.width = 3072;
+    this.height = 512;
+    // frame index refers to which sprite within the strip we're on.
+    this.frameIndex = 0;
+    // tickCount updates with each updat, used to keep track of how long that frame within the strip has been shown for. 
+    this.tickCount = 0;
+    // ticks per frame will determine how long each frame will play for.
+    this.ticksPerFrame = 4;
+    // number of images within the spritestrip.
+    this.numberOfFrames = 6;
+};
 
-// Place all enemy objects in an array called allEnemies
+BloodSplatter.prototype.update = function() {
+    // if the player isn't in dying mode no need for blood, so return from the function.
+    if (!player.dying) {
+        return;
+    }
+
+    // position the blood where ever the player is.
+    this.x = player.x;
+    this.y = player.y;
+    // update the tick counter by 1.
+    this.tickCount += 1;          
+    // If tickCount is more than the set number of ticks per frame then reset the tickCount and move on to the next frame.
+    if (this.tickCount > this.ticksPerFrame) {   
+        this.tickCount = 0;
+        // If the current frame index is in range
+        if (this.frameIndex < this.numberOfFrames - 1) {  
+            // Go to the next frame
+            this.frameIndex += 1;
+        } else {
+            // reset the player's pos
+            player.reset()
+            // set the frame index back to 0, so it will play from the beginning again.
+            this.frameIndex = 0;
+            this.tickCount = 0;
+        }
+    };
+}; 
+
+// Draws the blood.
+BloodSplatter.prototype.render = function() {
+    // If the player isn't dying, return from the function.
+    if (!player.dying) {
+        return;
+    }
+
+    ctx.drawImage(
+        // draw the blood sprite strip.
+        Resources.get(this.sprite), 
+        // start drawing the strip at pos x from whatever frame index we're on.
+        this.frameIndex * this.width / this.numberOfFrames, 
+        // pos y, start from the top of the strip.
+        0, 
+        // draw only the width of one frame (not the whole strip).
+        this.width / this.numberOfFrames, 
+        // draw the whole height of the strip.
+        this.height, 
+        // draw at pos x and y (set in update).
+        this.x, 
+        this.y, 
+        // draw image 100px wide and 100px high.
+        100, 
+        100);  
+};
+
+// GameOverSplash class. 
+var GameOverSplash = function() {
+    this.sprite = "images/gameover.png";
+    // sets postion to center of canvas.
+    this.x = canvas.width / 2 - 75;
+    this.y = canvas.height / 2 - 75; 
+};
+
+// Draws splash.
+GameOverSplash.prototype.render = function() {
+    if (gameover) {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y); 
+    };
+};
+
+// SuccessSplash Class.
+var SuccessSplash = function() {
+    this.sprite = "images/success.png";
+    // sets position to center of canvas.
+    this.x = canvas.width / 2 - 150;
+    this.y = canvas.height / 2 - 100; 
+    // initializes tick count to 0.
+    this.tickCount = 0;
+};
+
+SuccessSplash.prototype.update = function() {
+    // Unless the player has crossed the road, return from the function.
+    if (!player.crossed) {
+        return;
+    }
+
+    // update score on the first update only.
+    if (this.tickCount === 0) {
+        scoreValue++;
+        // update score on the screen.
+        $("#score").text("Score = " + scoreValue);
+    }
+
+    // update the tickCount to keep track of how long the splash has been showing for.
+    this.tickCount += 1;
+    // If tickCount has reached 40
+    if (this.tickCount > 40) {   
+        // reset the player's position and variables.
+        player.reset()
+        // reset the tickcount.
+        this.tickCount = 0;
+    };
+}; 
+
+// Draw the successSplash.
+SuccessSplash.prototype.render = function() {
+    if (player.crossed === true) {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y); 
+    };
+};
+
+// Initialize empty arrays for enemies and gems
 var allEnemies = [];
 var allGems = [];
 
 // loads sprites prior to init, allowing access to sprite properties such as width and height (used in collision).
 // taken from answer by NathanM https://discussions.udacity.com/t/width-and-height-yo/3531/3
 function gameStart() {
-  // Place all enemy objects in allEnemies
+  // Place all enemy objects in allEnemies.
   // TODO push enemies using a loop
-  allEnemies.push(new Enemy(), new Enemy(), new Enemy());
+  allEnemies.push(new Enemy(), new Enemy(), new Enemy(), new Enemy());
+  // Place all gem objects in allGems.
   allGems.push(new Gem(), new Gem(), new Gem());
-  // Place the player object in a variable called player
+  // Place the player object in a variable called player.
   player = new Player();
+  // Place BloodSplatter object in variable called blood to be updated and rendered when neccessary.
   blood = new BloodSplatter();
+  // Place GameOverSplash object in variable called gameOverSplash to be updated and rendered when neccessary.
   gameOverSplash = new GameOverSplash();
+  // Place SuccessSplash object in variable called successSplash to be updated and rendered when neccessary.
   successSplash = new SuccessSplash();
 };
-
-
-
-
-// Iterate through allEnemies. Remove offscreen enemies. If there are more than 3 enemies in the array push a new enemie. 
-// function removeEnemies() {
-//     var toRemove = [];
-//     var i = 0;
-//     //place all offscreen enemies in toRemove
-//     allEnemies.forEach(function(enemy) {  
-//         if (enemy.x > canvas.width) {
-//             toRemove.push(enemy[i]);
-//         }
-//         i++;
-//     });
-//     // remove enemies in the toRemove array from allEnemies
-//     toRemove.forEach(function(enemy) {
-//         allEnemies.slice(enemy);
-//     });
-// };
-
-// removeEnemies();
-
-// spawns new enemies if there is less than 3 enemies on the screen
-// spawnEnemies = function() {
-//     while (allEnemies.length < 3) {
-//         allEnemies.push(new Enemy());
-//     };
-// };
-
-// spawnEnemies();
-
-// Place the player object in a variable called player
-// var player = new Player();
 
 
 // This listens for key presses and sends the keys to your
@@ -292,106 +363,5 @@ document.addEventListener('keyup', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
-// BloodSplatter class constructed witht the help of http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
-// Thankyou to http://powstudios.com/ for the sprites
-var BloodSplatter = function() {
-    this.sprite = "images/blood copy.png";
-    this.x = player.x;
-    this.y = player.y;
-    this.width = 3072;
-    this.height = 512;
-    this.frameIndex = 0;
-    this.tickCount = 0;
-    // this.ticksPerFrame = ticksPerFrame || 0;
-    this.ticksPerFrame = 4;
-    this.numberOfFrames = 6;
-};
 
-BloodSplatter.prototype.update = function() {
-    if (!player.dying) {
-        return;
-    }
-
-    this.x = player.x;
-    this.y = player.y;
-    this.tickCount += 1;          
-    if (this.tickCount > this.ticksPerFrame) {   
-        this.tickCount = 0;
-        // If the current frame index is in range
-        if (this.frameIndex < this.numberOfFrames - 1) {  
-            // Go to the next frame
-            this.frameIndex += 1;
-        } else {
-            player.reset()
-            this.frameIndex = 0;
-            this.tickCount = 0;
-        }
-    };
-}; 
-
-BloodSplatter.prototype.render = function() {
-    if (!player.dying) {
-        return;
-    }
-
-    ctx.drawImage(
-        Resources.get(this.sprite), 
-        this.frameIndex * this.width / this.numberOfFrames, 
-        0, 
-        this.width / this.numberOfFrames, 
-        this.height, 
-        this.x, 
-        this.y, 
-        100, 
-        100);  
-};
-
-
-var GameOverSplash = function() {
-    this.sprite = "images/gameover.png";
-    this.x = canvas.width / 2 - 75;
-    this.y = canvas.height / 2 - 75; 
-};
-
-GameOverSplash.prototype.render = function() {
-    if (gameover) {
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y); 
-    };
-};
-
-var SuccessSplash = function() {
-    this.sprite = "images/success.png";
-    this.x = canvas.width / 2 - 150;
-    this.y = canvas.height / 2 - 100; 
-    this.tickCount = 0;
-};
-
-SuccessSplash.prototype.update = function() {
-    if (!player.crossed) {
-        return;
-    }
-
-    // update score on the first update only.
-    if (this.tickCount === 0) {
-        scoreValue++;
-        // update score on the screen.
-        $("#score").text("Score = " + scoreValue);
-    }
-
-    this.tickCount += 1;          
-    if (this.tickCount > 40) {   
-        player.reset()
-        this.frameIndex = 0;
-        this.tickCount = 0;
-    };
-}; 
-
-SuccessSplash.prototype.render = function() {
-    if (player.crossed === true) {
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y); 
-    };
-};
-// gameOverSplash = new GameOverSplash();
-
-// blood = new BloodSplatter();
 
