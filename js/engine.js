@@ -126,7 +126,7 @@ var Engine = (function(global) {
         updateEntities(dt);
 
         // TODO delete or use
-        // checkCollisions();
+        checkCollisions();
     }
 
     /* This is called by the update function. If player is not dying, function

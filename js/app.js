@@ -52,35 +52,62 @@ Enemy.prototype.update = function(dt) {
         this.speed = 75 + (getRandomInt(1, 10) * 10);
     };
     
+    // // TODO can I do this somewhere else, so it doesn't have to be done for each enemy???
+    // // in checkCollision???
+    // // Create player rectangle.
+    // var playerRectangle = {x: player.x, y: player.y, width: player.width, height: player.height};
+    // // Create enemy rectangle. 
+    // var enemyRectangle = {x: this.x, y: this.y, width: this.width, height: this.height};
+
+    // // compare player and enemy rectangles to detect if there has been a collision
+    // // code taken from https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
+    // if (playerRectangle.x < enemyRectangle.x + enemyRectangle.width &&
+    //    playerRectangle.x + playerRectangle.width > enemyRectangle.x &&
+    //    playerRectangle.y < enemyRectangle.y + enemyRectangle.height &&
+    //    playerRectangle.height + playerRectangle.y > enemyRectangle.y) {
+    //     // if there has been a collision, reduce lifeValue by 1. 
+    //     lifeValue--;
+    //     // set dying to true, so that entities stop updating and blood is updated.
+    //     player.dying = true;
+    //     // if lifeValue is less than 0, Game Over. 
+    //     if (lifeValue < 0) {
+    //         // play set to false to stop updating.
+    //         play = false;
+    //         // gameover set to true, so that gameOverSplash is updated.
+    //         gameover = true;
+    //     }
+    //     else {
+    //         // update lifes on the screen.
+    //         $("#lives").text("Lives = " + lifeValue);
+    //     };
+    // };
+};
+
+var checkCollisions = function() {
+    if (player.dying) {
+        return;
+    }
     // TODO can I do this somewhere else, so it doesn't have to be done for each enemy???
     // in checkCollision???
     // Create player rectangle.
     var playerRectangle = {x: player.x, y: player.y, width: player.width, height: player.height};
-    // Create enemy rectangle. 
-    var enemyRectangle = {x: this.x, y: this.y, width: this.width, height: this.height};
+    // For each enemy in allEnemies
+    allEnemies.forEach(function(enemy) {
+        // Create enemy rectangle.
+        var enemyRectangle = {x: enemy.x, y: enemy.y, width: enemy.width, height: enemy.height};
 
-    // compare player and enemy rectangles to detect if there has been a collision
-    // code taken from https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
-    if (playerRectangle.x < enemyRectangle.x + enemyRectangle.width &&
-       playerRectangle.x + playerRectangle.width > enemyRectangle.x &&
-       playerRectangle.y < enemyRectangle.y + enemyRectangle.height &&
-       playerRectangle.height + playerRectangle.y > enemyRectangle.y) {
-        // if there has been a collision, reduce lifeValue by 1. 
-        lifeValue--;
-        // set dying to true, so that entities stop updating and blood is updated.
-        player.dying = true;
-        // if lifeValue is less than 0, Game Over. 
-        if (lifeValue < 0) {
-            // play set to false to stop updating.
-            play = false;
-            // gameover set to true, so that gameOverSplash is updated.
-            gameover = true;
-        }
-        else {
-            // update lifes on the screen.
-            $("#lives").text("Lives = " + lifeValue);
-        };
-    };
+        // compare player and enemy rectangles to detect if there has been a collision
+        // code taken from https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
+        if (playerRectangle.x < enemyRectangle.x + enemyRectangle.width &&
+           playerRectangle.x + playerRectangle.width > enemyRectangle.x &&
+           playerRectangle.y < enemyRectangle.y + enemyRectangle.height &&
+           playerRectangle.height + playerRectangle.y > enemyRectangle.y) {
+            // if there has been a collision, reduce lifeValue by 1. 
+            lifeValue--;
+            // set dying to true, so that entities stop updating and blood is updated.
+            player.dying = true;
+          };
+    });
 };
 
 // Reset enemies for purpose of play button.
@@ -140,6 +167,17 @@ Player.prototype.handleInput = function(key) {
 
 // reset the player, called when playButton is clicked after gameover
 Player.prototype.reset = function() {
+    if (lifeValue < 0) {
+        // play set to false to stop updating.
+        play = false;
+        // gameover set to true, so that gameOverSplash is updated.
+        gameover = true;
+    }
+    else {
+        // update lifes on the screen.
+        $("#lives").text("Lives = " + lifeValue);
+    };
+
     this.x = col * 2;
     this.y = row * 4 + topPadding;
     this.dying = false;
