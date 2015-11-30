@@ -129,15 +129,13 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
-        allGems.forEach(function(gem) {
-            gem.update();
-        });
-
         if (player.dying !== true) {
             allEnemies.forEach(function(enemy) {
                 enemy.update(dt);
             });
-
+            allGems.forEach(function(gem) {
+                gem.update();
+            });
             player.update();
         }
 
