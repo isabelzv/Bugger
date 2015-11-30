@@ -11,13 +11,7 @@ h1 {
 	padding-top: 100px;
 };
 
-#playButton {
+button {
 	text-transform: uppercase;
-};
-
-
-/*#gameOver {
-	text-transform: uppercase;
-	font-size: 100px;
-} */
+}
 
