@@ -5,13 +5,19 @@ body {
 .gameTitle {
 	text-transform: uppercase;
 	font-size: 100px;
-};
+}
 
-h1 {
-	padding-top: 100px;
-};
-
-button {
+.btn {
 	text-transform: uppercase;
+}
+
+#lives {
+	text-transform: uppercase;
+	font-size: 40px;
+}
+
+#score {
+	text-transform: uppercase;
+	font-size: 40px;
 }
 
