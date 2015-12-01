@@ -15,7 +15,7 @@
  */
 
 
-var Engine = (function(global) {
+var Engine = (function (global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
      * set the canvas elements height/width and add it to the DOM.
@@ -36,7 +36,7 @@ var Engine = (function(global) {
     // use jQuery to add the canvas to the DOM
     $("#play").append(canvas);
 
-    // made canvas a global in order to access in app.js 
+    // made canvas a global in order to access in app.js
     global.canvas = canvas;
 
 
@@ -58,7 +58,7 @@ var Engine = (function(global) {
          */
         // use a button click to reset score, lives, player and enemies after
         // gameover and to toggle play on and off, which in turn determines
-        // whether or not update is called. 
+        // whether or not update is called.
         document.getElementById('playButton').onclick = function() {
             if (play === false) {
                 // set score to 0.
@@ -81,7 +81,7 @@ var Engine = (function(global) {
         };
         if (play === true) {
             update(dt);
-        };
+        }
         render();
 
         /* Set our lastTime variable which is used to determine the time delta
@@ -102,8 +102,6 @@ var Engine = (function(global) {
     function init() {
         // add gameStart function in order to load sprites and get properties.
         gameStart();
-        // TODO delete or use!!!
-        reset();
         lastTime = Date.now();
         main();
     }
@@ -119,18 +117,18 @@ var Engine = (function(global) {
      */
     function update(dt) {
         // if not in play mode do not update.
-        if (play != true) {
+        if (play !== true) {
             return;
         }
 
+        // call update on the various different enities.
         updateEntities(dt);
-
-        // TODO delete or use
+        // checks for collisions between enemies and player
         checkCollisions();
     }
 
     /* This is called by the update function. If player is not dying, function
-     * loops through all of the objects within allEnemies array and allGems 
+     * loops through all of the objects within allEnemies array and allGems
      * array and updates player as defined in app.js. Updates blood animation and
      * successSplash, if they have been called.
      */
@@ -147,7 +145,7 @@ var Engine = (function(global) {
 
         blood.update();
         successSplash.update();
-    };
+    }
 
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
@@ -198,46 +196,28 @@ var Engine = (function(global) {
      */
     function renderEntities() {
         /* Loop through all of the objects within the allEnemies array and allGems
-         * array as well as player, blood, gameOverSplash and successSplash objects 
+         * array as well as player, blood, gameOverSplash and successSplash objects
          * and call the render functions on them.
          */
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
-        
+
         allGems.forEach(function(gem) {
             gem.render();
         });
 
         player.render();
-        blood.render(); 
+        blood.render();
         gameOverSplash.render();
         successSplash.render();
     }
-
-    // TODO delete or use!!!!!
-    /* This function does nothing but it could have been a good place to
-     * handle game reset states - maybe a new game menu or a game over screen
-     * those sorts of things. It's only called once by the init() method.
-     */
-    function reset() {
-        // GAME OVER screen
-        // $("#play").style.display = none;
-        // player.reset();
-        // scoreValue = 0;
-        // lifeValue = 0;
-        // for (i = 0; i < allGems.length; i++) {
-        //     if (allGems[i].collected === true) {
-        //         allGems.slice(i);
-        //     };
-        // };
-    };
 
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
      * all of these images are properly loaded our game will start.
      */
-    // cropped player and enemy sprite in order to use width property for collision detection. 
+    // cropped player and enemy sprite in order to use width property for collision detection.
     // Renamed as new.... Resized gems, renamed as small....
     Resources.load([
         'images/stone-block.png',
@@ -245,8 +225,8 @@ var Engine = (function(global) {
         'images/grass-block.png',
         'images/newenemy-bug.png',
         'images/newchar-boy.png',
-        'images/smallGem Blue.png', 
-        'images/smallGem Green.png', 
+        'images/smallGem Blue.png',
+        'images/smallGem Green.png',
         'images/smallGem Orange.png',
         'images/blood copy.png',
         'images/gameover.png',
